@@ -1,0 +1,6 @@
+.ORIG x3000
+LEA R0, HW
+TRAP 0x30
+HALT
+HW .STRINGZ "Hello, Minecraft!"
+.END
