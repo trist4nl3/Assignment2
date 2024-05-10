@@ -1,0 +1,10 @@
+ABSOLUTEX                                                                  x300E
+ABSOLUTEY                                                                  x3013
+ABSOLUTEZ                                                                  x3018
+INDISTANCE                                                                 x3027
+G_X                                                                        x302A
+G_Y                                                                        x302B
+G_Z                                                                        x302C
+GOAL_DIST                                                                  x302D
+MSG                                                                        x302E
+OUT_MSG                                                                    x3036
