@@ -1,0 +1,82 @@
+  ADDR  |  HEX  |      BINARY      |  LN  |  ASSEMBLY
+        |       |                  |    1 | .ORIG x3000
+        |       |                  |    2 | 
+        |       |                  |    3 | ; convert to binary
+        |       |                  |    4 | ; R0 -> Number to convert
+        |       |                  |    5 | ; R1 -> quotient
+        |       |                  |    6 | ; R2 -> remainder
+        |       |                  |    7 | ; R3 -> temp value
+        |       |                  |    8 | ; R4 -> Iterator
+        |       |                  |    9 | ; R5 -> Quotient API
+        |       |                  |   10 | ; R6 -> Remainder API
+        |       |                  |   11 | ; To convert to binary
+        |       |                  |   12 | ; Divide Number by 2
+        |       |                  |   13 | ; Write down the remainder (this will be the least significant bit)
+        |       |                  |   14 | ; Replace the original number with the quotient
+        |       |                  |   15 | ; Repeat until quotient is 0
+ x3000  | x2024 | 0010000000100100 |   16 | LD R0, NUMBER_TO_CONVERT
+ x3001  | x5260 | 0101001001100000 |   17 | AND R1, R1, #0
+ x3002  | x54A0 | 0101010010100000 |   18 | AND R2, R2, #0
+ x3003  | x5920 | 0101100100100000 |   19 | AND R4, R4, #0
+        |       |                  |   20 | 
+        |       |                  |   21 | LOOP_1 
+ x3004  | x1020 | 0001000000100000 |   22 |     ADD R0, R0, #0 ; enable comparisions
+ x3005  | x4814 | 0100100000010100 |   23 |     JSR DIVIDEBY2
+        |       |                  |   24 |     ;TRAP 0x36
+        |       |                  |   25 |     ; Storing temp values for quotient and remainder
+        |       |                  |   26 |     ; Quotient
+ x3006  | x5B60 | 0101101101100000 |   27 |     AND R5, R5, #0
+ x3007  | x1A60 | 0001101001100000 |   28 |     ADD R5, R1, #0
+        |       |                  |   29 |     ; Remainder
+ x3008  | x5DA0 | 0101110110100000 |   30 |     AND R6, R6, #0
+ x3009  | x1CA0 | 0001110010100000 |   31 |     ADD R6, R2, #0
+        |       |                  |   32 |     ;TRAP 0x36
+        |       |                  |   33 |     ; using temp for the iterator
+ x300A  | x56E0 | 0101011011100000 |   34 |     AND R3, R3, #0
+ x300B  | x1730 | 0001011100110000 |   35 |     ADD R3, R4, #-16
+ x300C  | x040C | 0000010000001100 |   36 |     BRz ENDLOOP
+ x300D  | x1921 | 0001100100100001 |   37 |     ADD R4, R4, #1
+        |       |                  |   38 |     
+        |       |                  |   39 |     ; This will reset R0, R1, R2
+ x300E  | x5020 | 0101000000100000 |   40 |     AND R0, R0, #0
+ x300F  | x5260 | 0101001001100000 |   41 |     AND R1, R1, #0
+ x3010  | x54A0 | 0101010010100000 |   42 |     AND R2, R2, #0
+ x3011  | xF031 | 1111000000110001 |   43 |     TRAP 0x31
+ x3012  | x1004 | 0001000000000100 |   44 |     ADD R0, R0, R4
+ x3013  | x56E0 | 0101011011100000 |   45 |     AND R3, R3, #0
+ x3014  | x16C6 | 0001011011000110 |   46 |     ADD R3, R3, R6; Making the block ID whatever the remainder is
+ x3015  | xF034 | 1111000000110100 |   47 |     TRAP 0x34
+        |       |                  |   48 |     ;TRAP 0x36
+        |       |                  |   49 |     
+        |       |                  |   50 |     ; Resetting and setting values for the loop
+ x3016  | x5020 | 0101000000100000 |   51 |     AND R0, R0, #0
+ x3017  | x1160 | 0001000101100000 |   52 |     ADD R0, R5, #0 ; setting the current x value to quotient
+ x3018  | x0FEB | 0000111111101011 |   53 |     BRnzp LOOP_1
+        |       |                  |   54 | 
+        |       |                  |   55 | ENDLOOP
+        |       |                  |   56 | ;TRAP 0x36
+ x3019  | xF025 | 1111000000100101 |   57 | HALT
+        |       |                  |   58 | 
+        |       |                  |   59 | 
+        |       |                  |   60 | DIVIDEBY2
+ x301A  | x5260 | 0101001001100000 |   61 |     AND R1, R1, #0 ; prepping quotient
+ x301B  | x54A0 | 0101010010100000 |   62 |     AND R2, R2, #0 ; prepping remainder
+ x301C  | x56E0 | 0101011011100000 |   63 |     AND R3, R3, #0 ; prepping temp
+ x301D  | x1620 | 0001011000100000 |   64 |     ADD R3, R0, #0 ; setting temp = x
+        |       |                  |   65 |     div_loop
+ x301E  | x16FE | 0001011011111110 |   66 |         ADD R3, R3, #-2
+ x301F  | x0802 | 0000100000000010 |   67 |         BRn EXIT
+ x3020  | x1261 | 0001001001100001 |   68 |         ADD R1, R1, #1
+ x3021  | x07FC | 0000011111111100 |   69 |         BRzp div_loop
+        |       |                  |   70 | 
+        |       |                  |   71 | EXIT
+ x3022  | x14E2 | 0001010011100010 |   72 |     ADD R2, R3, #2
+ x3023  | xF036 | 1111000000110110 |   73 |     TRAP 0x36
+        |       |                  |   74 | 
+ x3024  | xC1C0 | 1100000111000000 |   75 | RET
+        |       |                  |   76 |     
+        |       |                  |   77 | 
+        |       |                  |   78 | 
+        |       |                  |   79 | 
+ x3025  | x00E5 | 0000000011100101 |   80 | NUMBER_TO_CONVERT .FILL #229 ; Note: Please do not change the name of this constant
+        |       |                  |   81 | .END 
