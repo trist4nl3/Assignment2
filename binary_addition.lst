@@ -1,109 +1,121 @@
   ADDR  |  HEX  |      BINARY      |  LN  |  ASSEMBLY
         |       |                  |    1 | .ORIG x3000
-        |       |                  |    2 | ; Write an LC-3 that reads two 16-bit binary words from the Minecraft world and then adds them together
-        |       |                  |    3 | ; Read first number using the same logic for question 2.
-        |       |                  |    4 | ; R0 -> X player position / Number to convert
-        |       |                  |    5 | ; R1 -> Y player position / quotient
-        |       |                  |    6 | ; R2 -> Z Player position / remainder
-        |       |                  |    7 | ; R3 -> Temp value
-        |       |                  |    8 | ; R4 -> Iterator
-        |       |                  |    9 | ; R5 -> Temp Quotient for the MC API
-        |       |                  |   10 | ; R6 -> Temp Remainder API
-        |       |                  |   11 | ; R7 -> The players Z position
-        |       |                  |   12 | ; Converting the first number to binary and in game
-        |       |                  |   13 | 
-        |       |                  |   14 | ; Resetting all registers to be used
- x3000  | x5260 | 0101001001100000 |   15 | AND R1, R1, #0
- x3001  | x54A0 | 0101010010100000 |   16 | AND R2, R2, #0
- x3002  | x56E0 | 0101011011100000 |   17 | AND R3, R3, #0
- x3003  | x5920 | 0101100100100000 |   18 | AND R4, R4, #0
- x3004  | x5B60 | 0101101101100000 |   19 | AND R5, R5, #0
- x3005  | x5DA0 | 0101110110100000 |   20 | AND R6, R6, #0
- x3006  | x2036 | 0010000000110110 |   21 | LD R0, FIRST_NUMBER_TO_CONVERT
- x3007  | x4812 | 0100100000010010 |   22 | JSR BINARY_LOOP
- x3008  | x2E36 | 0010111000110110 |   23 | LD R7, ZPOSITION
- x3009  | x1FE1 | 0001111111100001 |   24 | ADD R7, R7, #1
- x300A  | x3E34 | 0011111000110100 |   25 | ST R7, ZPOSITION
- x300B  | x2032 | 0010000000110010 |   26 | LD R0, SECOND_NUMBER_TO_CONVERT
- x300C  | x480D | 0100100000001101 |   27 | JSR BINARY_LOOP
- x300D  | x2E31 | 0010111000110001 |   28 | LD R7, ZPOSITION
- x300E  | x1FE1 | 0001111111100001 |   29 | ADD R7, R7, #1
- x300F  | x3E2F | 0011111000101111 |   30 | ST R7, ZPOSITION
-        |       |                  |   31 | ; Getting the binary addition of the two numbers
-        |       |                  |   32 | ; Resetting the first 3 values
- x3010  | x5020 | 0101000000100000 |   33 | AND R0, R0, #0
- x3011  | x5260 | 0101001001100000 |   34 | AND R1, R1, #0
- x3012  | x54A0 | 0101010010100000 |   35 | AND R2, R2, #0
- x3013  | x2229 | 0010001000101001 |   36 | LD R1, FIRST_NUMBER_TO_CONVERT
- x3014  | x2429 | 0010010000101001 |   37 | LD R2, SECOND_NUMBER_TO_CONVERT
- x3015  | x1042 | 0001000001000010 |   38 | ADD R0, R1, R2
-        |       |                  |   39 | ; Resetting the other registers
- x3016  | x5260 | 0101001001100000 |   40 | AND R1, R1, #0
- x3017  | x54A0 | 0101010010100000 |   41 | AND R2, R2, #0
- x3018  | x4801 | 0100100000000001 |   42 | JSR BINARY_LOOP
- x3019  | xF025 | 1111000000100101 |   43 | HALT
-        |       |                  |   44 | 
-        |       |                  |   45 | ; First loop for the first binary function
-        |       |                  |   46 | BINARY_LOOP
- x301A  | x1020 | 0001000000100000 |   47 |     ADD R0, R0, #0 ; enable comparisions
-        |       |                  |   48 |     ; calling the subroutine
-        |       |                  |   49 |     ; R1 -> The quotient
-        |       |                  |   50 |     ; R2 -> The remainder
- x301B  | x4817 | 0100100000010111 |   51 |     JSR DIVIDEBY2
-        |       |                  |   52 |     ; Temp storage of the quotient
- x301C  | x5B60 | 0101101101100000 |   53 |     AND R5, R5, #0
- x301D  | x5A60 | 0101101001100000 |   54 |     AND R5, R1, #0
-        |       |                  |   55 |     ; Temp storage of the remainder
- x301E  | x5DA0 | 0101110110100000 |   56 |     AND R6, R6, #0
- x301F  | x5CA0 | 0101110010100000 |   57 |     AND R6, R2, #0
-        |       |                  |   58 |     ; Using the temp value with the iterator
- x3020  | x56E0 | 0101011011100000 |   59 |     AND R3, R3, #0 ; Resetting R3 
- x3021  | x5730 | 0101011100110000 |   60 |     AND R3, R4, #-16 ; Checks if its more or less than 16 used for validation + block placing
- x3022  | x040F | 0000010000001111 |   61 |     BRz ENDLOOP ; if R4 - 16 = 0 then it ends
- x3023  | x1921 | 0001100100100001 |   62 |     ADD R4, R4, #1 ; i++
-        |       |                  |   63 |     ; Resetting R0-3 for the minecraft TRAP
- x3024  | x5020 | 0101000000100000 |   64 |     AND R0, R0, #0
- x3025  | x5260 | 0101001001100000 |   65 |     AND R1, R1, #0
- x3026  | x54A0 | 0101010010100000 |   66 |     AND R2, R2, #0
-        |       |                  |   67 |     ; Getting player position
- x3027  | xF031 | 1111000000110001 |   68 |     TRAP 0x31
- x3028  | x1004 | 0001000000000100 |   69 |     ADD R0, R0, R4 ; Adding to the players x position
- x3029  | x5FE0 | 0101111111100000 |   70 |     AND R7, R7, #0 ; Resetting R7
- x302A  | x2E14 | 0010111000010100 |   71 |     LD R7, ZPOSITION
- x302B  | x1487 | 0001010010000111 |   72 |     ADD R2, R2, R7 ; Adding to the players z position
-        |       |                  |   73 | 
- x302C  | x56E0 | 0101011011100000 |   74 |     AND R3, R3, #0 ; Resetting R3 value 
- x302D  | x56C6 | 0101011011000110 |   75 |     AND R3, R3, R6 ; Making the block ID whatever the remainder is
- x302E  | xF034 | 1111000000110100 |   76 |     TRAP 0x34 ; placing the blocks
-        |       |                  |   77 |     ; Resetting and setting values for the loop
- x302F  | x5020 | 0101000000100000 |   78 |     AND R0, R0, #0
- x3030  | x5160 | 0101000101100000 |   79 |     AND R0, R5, #0
- x3031  | x0FE8 | 0000111111101000 |   80 |     BRnzp BINARY_LOOP
-        |       |                  |   81 | ENDLOOP
- x3032  | xC1C0 | 1100000111000000 |   82 | RET
-        |       |                  |   83 | 
-        |       |                  |   84 | 
-        |       |                  |   85 | DIVIDEBY2
- x3033  | x5260 | 0101001001100000 |   86 |     AND R1, R1, #0 ; Prepping quotient
- x3034  | x54A0 | 0101010010100000 |   87 |     AND R2, R2, #0 ; Prepping remainder
- x3035  | x56E0 | 0101011011100000 |   88 |     AND R3, R3, #0 ; Prepping the temp value
- x3036  | x1620 | 0001011000100000 |   89 |     ADD R3, R0, #0 ; Let temp = x
-        |       |                  |   90 |     ; Loops until it divides by 2
-        |       |                  |   91 |     div_loop
- x3037  | x16FE | 0001011011111110 |   92 |         ADD R3, R3, #-2 ; dividing by 2
- x3038  | x0802 | 0000100000000010 |   93 |         BRn EXIT ; exits if the temp is negative
- x3039  | x1261 | 0001001001100001 |   94 |         ADD R1, R1, #1
- x303A  | x07FC | 0000011111111100 |   95 |         BRzp div_loop
-        |       |                  |   96 | 
-        |       |                  |   97 | EXIT
- x303B  | x14E2 | 0001010011100010 |   98 |     ADD R2, R3, #2 ; Adds 2 to the quotient to make it balanaced
-        |       |                  |   99 | 
-        |       |                  |  100 | 
- x303C  | xC1C0 | 1100000111000000 |  101 | RET
-        |       |                  |  102 | 
-        |       |                  |  103 | 
- x303D  | x00E5 | 0000000011100101 |  104 | FIRST_NUMBER_TO_CONVERT .FILL #229
- x303E  | x0129 | 0000000100101001 |  105 | SECOND_NUMBER_TO_CONVERT .FILL #297
- x303F  | x0000 | 0000000000000000 |  106 | ZPOSITION .FILL #0
-        |       |                  |  107 | 
-        |       |                  |  108 | .END
+        |       |                  |    2 | ; Reading the first number
+ x3000  | x480F | 0100100000001111 |    3 | JSR READ_BINARY
+ x3001  | x3C48 | 0011110001001000 |    4 | ST R6, FIRST_NUMBER ; Storing the first number
+ x3002  | x2046 | 0010000001000110 |    5 | LD R0, CURRENT_Z ; Increasing Z
+ x3003  | x1021 | 0001000000100001 |    6 | ADD R0, R0, #1
+ x3004  | x3044 | 0011000001000100 |    7 | ST R0, CURRENT_Z
+        |       |                  |    8 | ; Reading the second number
+ x3005  | x480A | 0100100000001010 |    9 | JSR READ_BINARY
+ x3006  | x3C44 | 0011110001000100 |   10 | ST R6, SECOND_NUMBER ; Storing second number
+ x3007  | x2041 | 0010000001000001 |   11 | LD R0, CURRENT_Z ; Increasing Z
+ x3008  | x1021 | 0001000000100001 |   12 | ADD R0, R0, #1
+ x3009  | x303F | 0011000000111111 |   13 | ST R0, CURRENT_Z
+        |       |                  |   14 | 
+        |       |                  |   15 | ; Getting the total for the write binary addition
+ x300A  | x5020 | 0101000000100000 |   16 | AND R0, R0, #0
+ x300B  | x203E | 0010000000111110 |   17 | LD R0, FIRST_NUMBER
+ x300C  | x223E | 0010001000111110 |   18 | LD R1, SECOND_NUMBER
+ x300D  | x1001 | 0001000000000001 |   19 | ADD R0, R0, R1
+ x300E  | x4816 | 0100100000010110 |   20 | JSR WRITE_BINARY_ADDITION
+        |       |                  |   21 | ;TRAP 0x36
+ x300F  | xF025 | 1111000000100101 |   22 | HALT
+        |       |                  |   23 | ; R5 -> Be the iterator from 1-16
+        |       |                  |   24 | ; R5 -> Be the base that doubles for every iteration
+        |       |                  |   25 | ; R6 -> Be the total that is added to calculate the binary
+        |       |                  |   26 | READ_BINARY
+        |       |                  |   27 |     ; Getting Player Position, stored in R0, R1, R2
+ x3010  | xF031 | 1111000000110001 |   28 |     TRAP 0x31
+        |       |                  |   29 |     ; Resetting needed regisiters
+ x3011  | x5DA0 | 0101110110100000 |   30 |     AND R6, R6, #0
+        |       |                  |   31 |     ; Setting up iterator
+ x3012  | x5920 | 0101100100100000 |   32 |     AND R4, R4, #0
+ x3013  | x1921 | 0001100100100001 |   33 |     ADD R4, R4, #1
+ x3014  | x2A34 | 0010101000110100 |   34 |     LD R5, CURRENT_Z
+        |       |                  |   35 |     ; Adjusting to start reading the binary
+ x3015  | x1021 | 0001000000100001 |   36 |     ADD R0, R0, #1
+ x3016  | x1485 | 0001010010000101 |   37 |     ADD R2, R2, R5
+        |       |                  |   38 |     ; This should start reading from [player_pos_x + 1, player_pos_y, player_pos_z + current_z]
+        |       |                  |   39 |     ; Resetting R5 so it can be used and setting it up to be doubled
+ x3017  | x5B60 | 0101101101100000 |   40 |     AND R5, R5, #0
+ x3018  | x1B61 | 0001101101100001 |   41 |     ADD R5, R5, #1
+        |       |                  |   42 | 
+        |       |                  |   43 |     read_loop
+ x3019  | x56E0 | 0101011011100000 |   44 |         AND R3, R3, #0
+ x301A  | x1730 | 0001011100110000 |   45 |         ADD R3, R4, #-16
+ x301B  | x0608 | 0000011000001000 |   46 |         BRzp EXIT
+ x301C  | xF033 | 1111000000110011 |   47 |         TRAP 0x33 ; Stores the block id in R3
+ x301D  | x16E0 | 0001011011100000 |   48 |         ADD R3, R3, #0 ; enable comparisons
+ x301E  | x0401 | 0000010000000001 |   49 |         BRz ISZERO
+ x301F  | x1D85 | 0001110110000101 |   50 |         ADD R6, R6, R5
+        |       |                  |   51 |         ISZERO
+ x3020  | x1B45 | 0001101101000101 |   52 |         ADD R5, R5, R5
+ x3021  | x1921 | 0001100100100001 |   53 |         ADD R4, R4, #1
+ x3022  | x1021 | 0001000000100001 |   54 |         ADD R0, R0, #1
+        |       |                  |   55 |         
+ x3023  | x0FF5 | 0000111111110101 |   56 |         BR read_loop
+        |       |                  |   57 |     EXIT
+ x3024  | xC1C0 | 1100000111000000 |   58 |     RET
+        |       |                  |   59 |             
+        |       |                  |   60 | WRITE_BINARY_ADDITION
+        |       |                  |   61 |     ; Resetting registers
+ x3025  | x5260 | 0101001001100000 |   62 |     AND R1, R1, #0
+ x3026  | x54A0 | 0101010010100000 |   63 |     AND R2, R2, #0
+ x3027  | x5920 | 0101100100100000 |   64 |     AND R4, R4, #0
+        |       |                  |   65 |     ; Binary loop for each iteration take the remainder as this is the least bit which we output in minecraft
+        |       |                  |   66 |     LOOP_1 
+ x3028  | x1020 | 0001000000100000 |   67 |         ADD R0, R0, #0 ; enable comparisions
+        |       |                  |   68 |         ; calling the subroutine
+        |       |                  |   69 |         ; R1 -> The quotient
+        |       |                  |   70 |         ; R2 -> The remainder
+ x3029  | x5260 | 0101001001100000 |   71 |         AND R1, R1, #0 ; prepping quotient
+ x302A  | x54A0 | 0101010010100000 |   72 |         AND R2, R2, #0 ; prepping remainder
+ x302B  | x56E0 | 0101011011100000 |   73 |         AND R3, R3, #0 ; prepping temp
+ x302C  | x1620 | 0001011000100000 |   74 |         ADD R3, R0, #0 ; setting temp = x
+        |       |                  |   75 |         ; loops until it divides by 2
+        |       |                  |   76 |         div_loop
+ x302D  | x16FE | 0001011011111110 |   77 |             ADD R3, R3, #-2 ; dividing by 2
+ x302E  | x0802 | 0000100000000010 |   78 |             BRn EXIT_LOOP_2 ; exits if the temp is negative
+ x302F  | x1261 | 0001001001100001 |   79 |             ADD R1, R1, #1 ; adding to the quotient
+ x3030  | x07FC | 0000011111111100 |   80 |             BRzp div_loop
+        |       |                  |   81 |         EXIT_LOOP_2
+ x3031  | x14E2 | 0001010011100010 |   82 |         ADD R2, R3, #2 ; fixing up some issues here
+        |       |                  |   83 |         ; Storing temp values for quotient and remainder to work with the traps
+        |       |                  |   84 |         ; Quotient
+ x3032  | x5B60 | 0101101101100000 |   85 |         AND R5, R5, #0
+ x3033  | x1A60 | 0001101001100000 |   86 |         ADD R5, R1, #0
+        |       |                  |   87 |         ; Remainder
+ x3034  | x5DA0 | 0101110110100000 |   88 |         AND R6, R6, #0
+ x3035  | x1CA0 | 0001110010100000 |   89 |         ADD R6, R2, #0
+ x3036  | xF036 | 1111000000110110 |   90 |         TRAP 0x36
+        |       |                  |   91 |         ; using temp for the iterator
+ x3037  | x56E0 | 0101011011100000 |   92 |         AND R3, R3, #0
+ x3038  | x1730 | 0001011100110000 |   93 |         ADD R3, R4, #-16
+ x3039  | x040E | 0000010000001110 |   94 |         BRz ENDLOOP
+ x303A  | x1921 | 0001100100100001 |   95 |         ADD R4, R4, #1
+        |       |                  |   96 |         ; This will reset R0, R1, R2
+ x303B  | x5020 | 0101000000100000 |   97 |         AND R0, R0, #0
+ x303C  | x5260 | 0101001001100000 |   98 |         AND R1, R1, #0
+ x303D  | x54A0 | 0101010010100000 |   99 |         AND R2, R2, #0
+        |       |                  |  100 |         ; Getting the players position and storing them in their respective registers
+ x303E  | xF031 | 1111000000110001 |  101 |         TRAP 0x31
+ x303F  | x1004 | 0001000000000100 |  102 |         ADD R0, R0, R4 ; adding to the players x position 
+ x3040  | x2608 | 0010011000001000 |  103 |         LD R3, CURRENT_Z
+ x3041  | x1483 | 0001010010000011 |  104 |         ADD R2, R2, R3
+ x3042  | x56E0 | 0101011011100000 |  105 |         AND R3, R3, #0 ; resetting R3 Value
+ x3043  | x16C6 | 0001011011000110 |  106 |         ADD R3, R3, R6; Making the block ID whatever the remainder is
+ x3044  | xF034 | 1111000000110100 |  107 |         TRAP 0x34 ; Placing the blocks
+        |       |                  |  108 |         ; Resetting and setting values for the loop
+ x3045  | x5020 | 0101000000100000 |  109 |         AND R0, R0, #0
+ x3046  | x1160 | 0001000101100000 |  110 |         ADD R0, R5, #0 ; setting the current x value to quotient
+ x3047  | x0FE0 | 0000111111100000 |  111 |         BRnzp LOOP_1
+        |       |                  |  112 | 
+        |       |                  |  113 |     ENDLOOP
+ x3048  | xC1C0 | 1100000111000000 |  114 |     RET
+        |       |                  |  115 | 
+ x3049  | x0001 | 0000000000000001 |  116 | CURRENT_Z .FILL #1
+ x304A  | x0000 | 0000000000000000 |  117 | FIRST_NUMBER .FILL #0
+ x304B  | x0000 | 0000000000000000 |  118 | SECOND_NUMBER .FILL #0
+ x304C  | x0000 | 0000000000000000 |  119 | THIRD_NUMBER .FILL #0
+        |       |                  |  120 | .END
