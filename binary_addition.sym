@@ -1,0 +1,8 @@
+BINARY_LOOP                                                                x301A
+ENDLOOP                                                                    x3032
+DIVIDEBY2                                                                  x3033
+div_loop                                                                   x3037
+EXIT                                                                       x303B
+FIRST_NUMBER_TO_CONVERT                                                    x303D
+SECOND_NUMBER_TO_CONVERT                                                   x303E
+ZPOSITION                                                                  x303F

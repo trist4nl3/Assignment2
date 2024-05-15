@@ -22,6 +22,8 @@ AND R4, R4, #0
 LOOP_1 
     ADD R0, R0, #0 ; enable comparisions
     ; calling the subroutine
+    ; R1 -> The quotient
+    ; R2 -> The remainder
     JSR DIVIDEBY2
     ; Storing temp values for quotient and remainder to work with the traps
     ; Quotient
@@ -42,9 +44,9 @@ LOOP_1
     ; Getting the players position and storing them in their respective registers
     TRAP 0x31
     ADD R0, R0, R4 ; adding to the players x position 
-    AND R3, R3, #0
+    AND R3, R3, #0 ; resetting R3 Value
     ADD R3, R3, R6; Making the block ID whatever the remainder is
-    TRAP 0x34
+    TRAP 0x34 ; Placing the blocks
     ; Resetting and setting values for the loop
     AND R0, R0, #0
     ADD R0, R5, #0 ; setting the current x value to quotient
